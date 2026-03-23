@@ -5,16 +5,16 @@ Auto-eval and observability for AI agents. Trace every LLM call, run evaluations
 ## Install
 
 ```bash
-pip install kate
+pip install projectkate
 ```
 
 ### Optional instrumentation extras
 
 ```bash
-pip install kate[openai]                # Auto-instrument OpenAI SDK
-pip install kate[anthropic-instrument]  # Auto-instrument Anthropic SDK
-pip install kate[langchain]             # Auto-instrument LangChain / LangGraph
-pip install kate[all]                   # All supported providers
+pip install projectkate[openai]                # Auto-instrument OpenAI SDK
+pip install projectkate[anthropic-instrument]  # Auto-instrument Anthropic SDK
+pip install projectkate[langchain]             # Auto-instrument LangChain / LangGraph
+pip install projectkate[all]                   # All supported providers
 ```
 
 ## Quick Start

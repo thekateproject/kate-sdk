@@ -79,6 +79,9 @@ dev = [
     "respx>=0.21",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["kate_sdk"]
+
 [project.urls]
 Homepage = "https://www.projectkate.com"
 Repository = "https://github.com/thekateproject/kate-sdk"

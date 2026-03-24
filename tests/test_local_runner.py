@@ -6,9 +6,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from kate_sdk._llm import LLMResponse
-from kate_sdk.context import SpanRecord
-from kate_sdk.local.runner import LocalEvalRunner
+from projectkate._llm import LLMResponse
+from projectkate.context import SpanRecord
+from projectkate.local.runner import LocalEvalRunner
 
 
 def _make_llm_client(classification: str = "extraction"):
@@ -64,7 +64,7 @@ async def test_local_runner_with_mocked_metrics():
     mock_m = _mock_metric(0.85, "Good extraction")
 
     with patch(
-        "kate_sdk.local.runner.get_metrics_for_classification",
+        "projectkate.local.runner.get_metrics_for_classification",
         return_value=[mock_m],
     ):
         runner = LocalEvalRunner(llm_client=llm, store_results=False)
@@ -118,7 +118,7 @@ async def test_local_runner_accepts_lowercase_llm():
     mock_m = _mock_metric(0.9, "Good")
 
     with patch(
-        "kate_sdk.local.runner.get_metrics_for_classification",
+        "projectkate.local.runner.get_metrics_for_classification",
         return_value=[mock_m],
     ):
         runner = LocalEvalRunner(llm_client=llm, store_results=False)
@@ -146,12 +146,12 @@ async def test_local_runner_sqlite_persistence(tmp_path):
 
     with (
         patch(
-            "kate_sdk.local.runner.get_metrics_for_classification",
+            "projectkate.local.runner.get_metrics_for_classification",
             return_value=[mock_m],
         ),
-        patch("kate_sdk.local.engine._db_path", return_value=db_path),
-        patch("kate_sdk.local.engine._engine", None),
-        patch("kate_sdk.local.engine._session_factory", None),
+        patch("projectkate.local.engine._db_path", return_value=db_path),
+        patch("projectkate.local.engine._engine", None),
+        patch("projectkate.local.engine._session_factory", None),
     ):
         runner = LocalEvalRunner(llm_client=llm, store_results=True)
         summary = await runner.run(spans)

@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from kate_sdk._llm import AnthropicLLMClient, OpenAILLMClient
+from projectkate._llm import AnthropicLLMClient, OpenAILLMClient
 
 
 @pytest.mark.asyncio

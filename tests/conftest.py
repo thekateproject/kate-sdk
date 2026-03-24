@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from kate_sdk._state import KateSDK
+from projectkate._state import KateSDK
 
 
 @pytest.fixture(autouse=True)

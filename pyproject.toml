@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "projectkate"
-version = "0.1.0"
+version = "0.1.1"
 description = "KATE SDK — local-first auto-eval for AI agents"
 authors = [{ name = "Sagnik", email = "sagnik@projectkate.com" }]
 license = { text = "Apache-2.0" }
@@ -80,7 +80,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["kate_sdk"]
+packages = ["projectkate"]
 
 [project.urls]
 Homepage = "https://www.projectkate.com"

@@ -8,8 +8,8 @@ import json
 import time
 from typing import Any, Callable
 
-from kate_sdk._state import KateSDK
-from kate_sdk.context import SpanRecord
+from projectkate._state import KateSDK
+from projectkate.context import SpanRecord
 
 
 def _serialize(value: Any) -> str:

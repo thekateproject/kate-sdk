@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 
-from kate_sdk.local.models import NodeClassification
+from projectkate.local.models import NodeClassification
 
 logger = logging.getLogger(__name__)
 

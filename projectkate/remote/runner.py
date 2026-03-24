@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 import httpx
 
 if TYPE_CHECKING:
-    from kate_sdk.context import SpanRecord
+    from projectkate.context import SpanRecord
 
 
 class KateRemoteError(Exception):
@@ -77,7 +77,7 @@ class RemoteEvalRunner:
         if not self.agent_name:
             raise KateRemoteError(
                 "[KATE] No agent_id or agent_name provided. "
-                "Pass agent_id= or agent_name= to kate_sdk.init()."
+                "Pass agent_id= or agent_name= to projectkate.init()."
             )
         # Check if agent with this name already exists
         resp = await self._get_client().get("/agents")

@@ -7,8 +7,8 @@ from unittest.mock import AsyncMock, patch
 import httpx
 import pytest
 
-from kate_sdk.context import SpanRecord
-from kate_sdk.remote.runner import KateRemoteError, RemoteEvalRunner
+from projectkate.context import SpanRecord
+from projectkate.remote.runner import KateRemoteError, RemoteEvalRunner
 
 _DUMMY_REQUEST = httpx.Request("POST", "http://kate.test:8000/test")
 

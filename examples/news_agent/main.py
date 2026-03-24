@@ -7,12 +7,12 @@ stories using DuckDuckGo + an LLM (OpenAI or Anthropic).
 Pipeline: fetch_news -> rank_stories -> summarize_stories -> format_output
 
 This example demonstrates:
-  - kate_sdk.init() to configure the SDK
-  - @kate_sdk.trace() to capture each LLM call as a traced span
-  - kate_sdk.run() context manager for run lifecycle + auto-eval
+  - projectkate.init() to configure the SDK
+  - @projectkate.trace() to capture each LLM call as a traced span
+  - projectkate.run() context manager for run lifecycle + auto-eval
 
 Requirements:
-  pip install kate-sdk[langchain] langchain-openai langgraph duckduckgo-search
+  pip install projectkate[langchain] langchain-openai langgraph duckduckgo-search
 
 Environment variables:
   KATE_API_URL       KATE server URL (default: http://localhost:8000)
@@ -37,7 +37,7 @@ from typing import TypedDict
 from langchain_core.messages import HumanMessage
 from langgraph.graph import END, StateGraph
 
-import kate_sdk
+import projectkate
 
 
 # ---------------------------------------------------------------------------
@@ -76,7 +76,7 @@ def _get_llm():
 
 
 # ---------------------------------------------------------------------------
-# Pipeline nodes — each LLM call is traced via @kate_sdk.trace
+# Pipeline nodes — each LLM call is traced via @projectkate.trace
 # ---------------------------------------------------------------------------
 
 def fetch_news(state: AgentState) -> dict:
@@ -93,7 +93,7 @@ def fetch_news(state: AgentState) -> dict:
     return {"raw_results": raw}
 
 
-@kate_sdk.trace("rank_stories")
+@projectkate.trace("rank_stories")
 def rank_stories(state: AgentState) -> dict:
     """Use an LLM to pick the top 5 most important, diverse stories."""
     llm = _get_llm()
@@ -124,7 +124,7 @@ Search results:
     return {"ranked_stories": ranked}
 
 
-@kate_sdk.trace("summarize_stories")
+@projectkate.trace("summarize_stories")
 def summarize_stories(state: AgentState) -> dict:
     """Use an LLM to write a 2-3 sentence summary for each story."""
     llm = _get_llm()
@@ -193,11 +193,11 @@ def build_graph() -> StateGraph:
 
 async def main():
     # Initialize KATE SDK (reads config from env vars)
-    kate_sdk.init()
+    projectkate.init()
 
     # Run the agent inside a KATE run context
     # On exit, the run is marked complete and auto-eval is triggered
-    async with kate_sdk.run() as ctx:
+    async with projectkate.run() as ctx:
         app = build_graph().compile()
         result = app.invoke({
             "raw_results": "",

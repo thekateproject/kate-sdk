@@ -5,10 +5,10 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from kate_sdk._state import KateSDK
-from kate_sdk.constants import DEFAULT_TRIGGER, VALID_TRIGGERS
-from kate_sdk.context import RunContext
-from kate_sdk.output import print_eval_summary
+from projectkate._state import KateSDK
+from projectkate.constants import DEFAULT_TRIGGER, VALID_TRIGGERS
+from projectkate.context import RunContext
+from projectkate.output import print_eval_summary
 
 
 @asynccontextmanager

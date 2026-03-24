@@ -6,8 +6,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-import kate_sdk as kate
-from kate_sdk._state import KateSDK
+import projectkate as kate
+from projectkate._state import KateSDK
 
 
 def test_invalid_trigger_raises():
@@ -33,7 +33,7 @@ async def test_remote_run_calls_lifecycle_methods():
     runner.upload_spans = AsyncMock()
     runner.complete_run = AsyncMock()
 
-    with patch("kate_sdk.run_context.print_eval_summary"):
+    with patch("projectkate.run_context.print_eval_summary"):
         async with kate.run(trigger="manual"):
             pass
 
@@ -54,7 +54,7 @@ async def test_active_ctx_cleared_on_exception():
     runner.complete_run = AsyncMock()
 
     with pytest.raises(RuntimeError, match="boom"):
-        with patch("kate_sdk.run_context.print_eval_summary"):
+        with patch("projectkate.run_context.print_eval_summary"):
             async with kate.run(trigger="manual"):
                 raise RuntimeError("boom")
 
@@ -73,7 +73,7 @@ async def test_active_ctx_cleared_on_start_run_failure():
     runner.complete_run = AsyncMock()
 
     with pytest.raises(ConnectionError, match="network down"):
-        with patch("kate_sdk.run_context.print_eval_summary"):
+        with patch("projectkate.run_context.print_eval_summary"):
             async with kate.run(trigger="manual"):
                 pass
 
@@ -91,6 +91,6 @@ async def test_run_id_updated_from_server():
     runner.upload_spans = AsyncMock()
     runner.complete_run = AsyncMock()
 
-    with patch("kate_sdk.run_context.print_eval_summary"):
+    with patch("projectkate.run_context.print_eval_summary"):
         async with kate.run(trigger="manual") as ctx:
             assert ctx.run_id == "server-run-id"

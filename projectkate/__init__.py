@@ -1,9 +1,9 @@
 """KATE SDK — local-first auto-eval for AI agents."""
 
-from kate_sdk._state import KateSDK
-from kate_sdk.decorators import trace
-from kate_sdk.remote.runner import KateRemoteError
-from kate_sdk.run_context import run
+from projectkate._state import KateSDK
+from projectkate.decorators import trace
+from projectkate.remote.runner import KateRemoteError
+from projectkate.run_context import run
 
 
 def init(**kwargs) -> None:

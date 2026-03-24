@@ -7,10 +7,10 @@ import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from kate_sdk.local.models import NodeClassification
+from projectkate.local.models import NodeClassification
 
 if TYPE_CHECKING:
-    from kate_sdk._llm import LLMClient
+    from projectkate._llm import LLMClient
 
 
 @dataclass

@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-import kate_sdk as kate
-from kate_sdk._state import KateSDK
-from kate_sdk.context import RunContext
+import projectkate as kate
+from projectkate._state import KateSDK
+from projectkate.context import RunContext
 
 
 @pytest.fixture

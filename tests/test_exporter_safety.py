@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from kate_sdk._state import KateSDK
-from kate_sdk.instrument.exporter import KateSpanExporter
+from projectkate._state import KateSDK
+from projectkate.instrument.exporter import KateSpanExporter
 
 
 def _make_span(*, status=None, status_code=None, attrs=None):

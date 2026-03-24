@@ -20,13 +20,13 @@ pip install projectkate[all]                   # All supported providers
 ## Quick Start
 
 ```python
-import kate_sdk
+import projectkate
 
 # Initialize — reads KATE_API_URL, KATE_API_KEY, KATE_AGENT_ID from env
-kate_sdk.init()
+projectkate.init()
 
 # Trace any function that calls an LLM
-@kate_sdk.trace("summarize")
+@projectkate.trace("summarize")
 def summarize(text: str) -> str:
     return client.messages.create(
         model="claude-sonnet-4-20250514",
@@ -34,7 +34,7 @@ def summarize(text: str) -> str:
     ).content[0].text
 
 # Run context: creates a run, captures traces, triggers eval on exit
-async with kate_sdk.run() as ctx:
+async with projectkate.run() as ctx:
     result = summarize("Today's top news stories...")
     ctx.output(result)
 ```
@@ -44,9 +44,9 @@ async with kate_sdk.run() as ctx:
 Run evaluations locally against your agent with zero infrastructure:
 
 ```python
-from kate_sdk.local import LocalRunner
+from projectkate.local import LocalEvalRunner
 
-runner = LocalRunner(agent_fn=my_agent)
+runner = LocalEvalRunner(agent_fn=my_agent)
 results = await runner.run(test_cases=[
     {"input": "Summarize the news", "expected": "A concise summary..."},
 ])

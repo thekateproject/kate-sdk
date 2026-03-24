@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from kate_sdk.local.models import NodeClassification
+from projectkate.local.models import NodeClassification
 
 if TYPE_CHECKING:
-    from kate_sdk._llm import LLMClient
+    from projectkate._llm import LLMClient
 
 _CRITERIA_PROMPT = (
     "You are generating evaluation criteria for a GEval metric "

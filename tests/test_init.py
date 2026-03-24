@@ -1,4 +1,4 @@
-"""Tests for kate_sdk.init() mode detection."""
+"""Tests for projectkate.init() mode detection."""
 
 from __future__ import annotations
 
@@ -7,8 +7,8 @@ from unittest.mock import patch
 
 import pytest
 
-import kate_sdk as kate
-from kate_sdk._state import KateSDK
+import projectkate as kate
+from projectkate._state import KateSDK
 
 
 def test_local_mode_with_api_key():

@@ -5,17 +5,17 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from kate_sdk.local.classifier import NodeInfo, classify_node
-from kate_sdk.local.criteria import generate_criteria
-from kate_sdk.local.metrics import (
+from projectkate.local.classifier import NodeInfo, classify_node
+from projectkate.local.criteria import generate_criteria
+from projectkate.local.metrics import (
     get_metric_names_for_classification,
     get_metrics_for_classification,
     run_metric,
 )
 
 if TYPE_CHECKING:
-    from kate_sdk._llm import LLMClient
-    from kate_sdk.context import SpanRecord
+    from projectkate._llm import LLMClient
+    from projectkate.context import SpanRecord
 
 
 class LocalEvalRunner:
@@ -99,8 +99,8 @@ class LocalEvalRunner:
         completed_at: datetime,
     ) -> None:
         """Write results to ~/.kate/evals.db."""
-        from kate_sdk.local.engine import get_session
-        from kate_sdk.local.models import LocalEvalResult, LocalEvalRun
+        from projectkate.local.engine import get_session
+        from projectkate.local.models import LocalEvalResult, LocalEvalRun
 
         async with await get_session() as session:
             run = LocalEvalRun(

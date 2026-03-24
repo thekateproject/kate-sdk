@@ -6,7 +6,7 @@ import logging
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from kate_sdk._state import KateSDK
+    from projectkate._state import KateSDK
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +16,8 @@ def setup_auto_instrumentation(sdk: KateSDK) -> None:
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 
-    from kate_sdk.instrument.exporter import KateSpanExporter
-    from kate_sdk.instrument.registry import detect_installed, load_instrumentor
+    from projectkate.instrument.exporter import KateSpanExporter
+    from projectkate.instrument.registry import detect_installed, load_instrumentor
 
     exporter = KateSpanExporter(sdk)
     provider = TracerProvider()

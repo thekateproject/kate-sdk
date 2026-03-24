@@ -10,7 +10,7 @@ from opentelemetry.sdk.trace.export import SpanExporter, SpanExportResult
 if TYPE_CHECKING:
     from opentelemetry.sdk.trace import ReadableSpan
 
-    from kate_sdk._state import KateSDK
+    from projectkate._state import KateSDK
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class KateSpanExporter(SpanExporter):
         - llm.token_count.prompt, llm.token_count.completion
         - openinference.span.kind
         """
-        from kate_sdk.context import SpanRecord
+        from projectkate.context import SpanRecord
 
         attrs = dict(span.attributes or {})
 

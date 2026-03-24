@@ -66,7 +66,7 @@ def detect_installed() -> list[dict]:
         except ImportError:
             logger.debug(
                 "Framework '%s' detected but instrumentor '%s' not installed. "
-                "Install with: pip install kate-sdk[%s]",
+                "Install with: pip install projectkate[%s]",
                 entry["name"],
                 entry["instrumentor"],
                 entry["name"],

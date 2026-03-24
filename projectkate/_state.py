@@ -6,16 +6,16 @@ import logging
 import os
 from typing import TYPE_CHECKING
 
-from kate_sdk.constants import (
+from projectkate.constants import (
     DEFAULT_ANTHROPIC_MODEL,
     DEFAULT_OPENAI_MODEL,
     KNOWN_LLM_PROVIDERS,
 )
 
 if TYPE_CHECKING:
-    from kate_sdk._llm import LLMClient
-    from kate_sdk.context import RunContext, SpanRecord
-    from kate_sdk.remote.runner import RemoteEvalRunner
+    from projectkate._llm import LLMClient
+    from projectkate.context import RunContext, SpanRecord
+    from projectkate.remote.runner import RemoteEvalRunner
 
 logger = logging.getLogger(__name__)
 
@@ -85,9 +85,9 @@ class KateSDK:
             if not agent_id and not agent_name:
                 raise ValueError(
                     "Remote mode requires either agent_id= or agent_name=. "
-                    "Pass one to kate_sdk.init() or set KATE_AGENT_ID."
+                    "Pass one to projectkate.init() or set KATE_AGENT_ID."
                 )
-            from kate_sdk.remote.runner import RemoteEvalRunner
+            from projectkate.remote.runner import RemoteEvalRunner
 
             self._remote_runner = RemoteEvalRunner(
                 api_url=api_url,
@@ -114,20 +114,20 @@ class KateSDK:
                 )
 
             if llm_provider == "openai":
-                from kate_sdk._llm import OpenAILLMClient
+                from projectkate._llm import OpenAILLMClient
 
                 self._llm_client = OpenAILLMClient(
                     api_key=llm_api_key, model=llm_model or DEFAULT_OPENAI_MODEL
                 )
             else:
-                from kate_sdk._llm import AnthropicLLMClient
+                from projectkate._llm import AnthropicLLMClient
 
                 self._llm_client = AnthropicLLMClient(
                     api_key=llm_api_key, model=llm_model or DEFAULT_ANTHROPIC_MODEL
                 )
 
         if auto_instrument:
-            from kate_sdk.instrument import setup_auto_instrumentation
+            from projectkate.instrument import setup_auto_instrumentation
 
             setup_auto_instrumentation(self)
 
@@ -143,7 +143,7 @@ class KateSDK:
             return {"mode": "remote", "run_id": ctx.run_id, "status": "submitted"}
 
         # Local mode
-        from kate_sdk.local.runner import LocalEvalRunner
+        from projectkate.local.runner import LocalEvalRunner
 
         runner = LocalEvalRunner(
             llm_client=self._llm_client,

@@ -58,7 +58,7 @@ def _make_mock_otel_span(
 
 def test_detect_installed_finds_openai():
     """When openai and its instrumentor are importable, detect_installed returns the entry."""
-    from kate_sdk.instrument.registry import detect_installed
+    from projectkate.instrument.registry import detect_installed
 
     with patch("importlib.import_module") as mock_import:
         # Both framework and instrumentor succeed
@@ -70,7 +70,7 @@ def test_detect_installed_finds_openai():
 
 def test_detect_installed_skips_missing():
     """When a framework is not installed, it's skipped."""
-    from kate_sdk.instrument.registry import detect_installed
+    from projectkate.instrument.registry import detect_installed
 
     with patch("importlib.import_module") as mock_import:
         mock_import.side_effect = ImportError("not found")
@@ -81,7 +81,7 @@ def test_detect_installed_skips_missing():
 
 def test_detect_installed_skips_missing_instrumentor():
     """Framework installed but instrumentor missing → skipped."""
-    from kate_sdk.instrument.registry import detect_installed
+    from projectkate.instrument.registry import detect_installed
 
     def selective_import(name):
         # Framework modules succeed, instrumentor modules fail
@@ -101,8 +101,8 @@ def test_detect_installed_skips_missing_instrumentor():
 
 def test_exporter_converts_llm_span():
     """OTel LLM span is converted to SpanRecord with correct fields."""
-    from kate_sdk._state import KateSDK
-    from kate_sdk.instrument.exporter import KateSpanExporter
+    from projectkate._state import KateSDK
+    from projectkate.instrument.exporter import KateSpanExporter
 
     sdk = KateSDK()
     exporter = KateSpanExporter(sdk)
@@ -120,8 +120,8 @@ def test_exporter_converts_llm_span():
 
 def test_exporter_skips_internal_spans():
     """Spans without a tracked openinference.span.kind are filtered out."""
-    from kate_sdk._state import KateSDK
-    from kate_sdk.instrument.exporter import KateSpanExporter
+    from projectkate._state import KateSDK
+    from projectkate.instrument.exporter import KateSpanExporter
 
     sdk = KateSDK()
     exporter = KateSpanExporter(sdk)
@@ -133,9 +133,9 @@ def test_exporter_skips_internal_spans():
 
 def test_exporter_records_to_active_context():
     """Exported spans land in the active RunContext via sdk.record_span()."""
-    from kate_sdk._state import KateSDK
-    from kate_sdk.context import RunContext
-    from kate_sdk.instrument.exporter import KateSpanExporter, SpanExportResult
+    from projectkate._state import KateSDK
+    from projectkate.context import RunContext
+    from projectkate.instrument.exporter import KateSpanExporter, SpanExportResult
 
     sdk = KateSDK()
     ctx = RunContext()
@@ -152,8 +152,8 @@ def test_exporter_records_to_active_context():
 
 def test_model_and_tokens_extracted():
     """Model name and token counts are extracted from OTel attributes."""
-    from kate_sdk._state import KateSDK
-    from kate_sdk.instrument.exporter import KateSpanExporter
+    from projectkate._state import KateSDK
+    from projectkate.instrument.exporter import KateSpanExporter
 
     sdk = KateSDK()
     exporter = KateSpanExporter(sdk)
@@ -172,14 +172,14 @@ def test_model_and_tokens_extracted():
 
 def test_setup_instruments_detected_frameworks():
     """setup_auto_instrumentation calls .instrument() on detected frameworks."""
-    from kate_sdk._state import KateSDK
+    from projectkate._state import KateSDK
 
     sdk = KateSDK()
     mock_instrumentor = MagicMock()
 
     with (
-        patch("kate_sdk.instrument.registry.detect_installed") as mock_detect,
-        patch("kate_sdk.instrument.registry.load_instrumentor") as mock_load,
+        patch("projectkate.instrument.registry.detect_installed") as mock_detect,
+        patch("projectkate.instrument.registry.load_instrumentor") as mock_load,
         patch("opentelemetry.sdk.trace.TracerProvider") as mock_tp_cls,
         patch("opentelemetry.sdk.trace.export.SimpleSpanProcessor"),
     ):
@@ -187,7 +187,7 @@ def test_setup_instruments_detected_frameworks():
         mock_load.return_value = mock_instrumentor
         mock_tp_cls.return_value = MagicMock()
 
-        from kate_sdk.instrument import setup_auto_instrumentation
+        from projectkate.instrument import setup_auto_instrumentation
 
         setup_auto_instrumentation(sdk)
 
@@ -197,11 +197,11 @@ def test_setup_instruments_detected_frameworks():
 
 def test_init_auto_instrument_flag():
     """kate.init(auto_instrument=True) activates instrumentation."""
-    from kate_sdk._state import KateSDK
+    from projectkate._state import KateSDK
 
     sdk = KateSDK()
 
-    with patch("kate_sdk.instrument.setup_auto_instrumentation") as mock_setup:
+    with patch("projectkate.instrument.setup_auto_instrumentation") as mock_setup:
         sdk.init(api_url="http://localhost:8000", agent_id="test", auto_instrument=True)
 
     mock_setup.assert_called_once_with(sdk)
@@ -209,11 +209,11 @@ def test_init_auto_instrument_flag():
 
 def test_init_without_auto_instrument():
     """Default init() does NOT activate instrumentation."""
-    from kate_sdk._state import KateSDK
+    from projectkate._state import KateSDK
 
     sdk = KateSDK()
 
-    with patch("kate_sdk.instrument.setup_auto_instrumentation") as mock_setup:
+    with patch("projectkate.instrument.setup_auto_instrumentation") as mock_setup:
         sdk.init(api_url="http://localhost:8000", agent_id="test")
 
     mock_setup.assert_not_called()
@@ -221,7 +221,7 @@ def test_init_without_auto_instrument():
 
 def test_reset_cleans_up_provider():
     """sdk.reset() shuts down the tracer provider."""
-    from kate_sdk._state import KateSDK
+    from projectkate._state import KateSDK
 
     sdk = KateSDK()
     KateSDK._instance = sdk

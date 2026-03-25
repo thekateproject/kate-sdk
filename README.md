@@ -1,6 +1,6 @@
 ![PyPI](https://img.shields.io/pypi/v/projectkate)
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue)
-![Python](https://img.shields.io/pypi/pyversions/projectkate)
+![Python](https://img.shields.io/badge/python-3.9+-blue)
 
 # KATE SDK
 

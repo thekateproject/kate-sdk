@@ -1,3 +1,7 @@
+![PyPI](https://img.shields.io/pypi/v/projectkate)
+![License](https://img.shields.io/badge/license-Apache%202.0-blue)
+![Python](https://img.shields.io/pypi/pyversions/projectkate)
+
 # KATE SDK
 
 Auto-eval and observability for AI agents. Trace every LLM call, run evaluations locally or against a KATE server, and catch regressions before they ship.
@@ -38,6 +42,17 @@ async with projectkate.run() as ctx:
     result = summarize("Today's top news stories...")
     ctx.output(result)
 ```
+
+## How KATE Compares
+
+| Feature | KATE | LangSmith | Arize Phoenix |
+| --- | --- | --- | --- |
+| Built for agentic loops | Yes | Partial (RAG-focused) | Partial |
+| Auto-instrumentation | Yes, zero-config | Manual setup | Manual setup |
+| Hallucination detection | Built-in | Separate tool needed | Built-in |
+| Open source | Yes | No | Yes |
+| Framework agnostic | Yes | LangChain-first | Yes |
+| Self-hostable | Yes | No | Yes |
 
 ## Local Eval (no server needed)
 

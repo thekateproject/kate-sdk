@@ -1,6 +1,7 @@
 """KATE SDK — local-first auto-eval for AI agents."""
 
 from projectkate._state import KateSDK
+from projectkate.client import KateClient
 from projectkate.decorators import trace
 from projectkate.remote.runner import KateRemoteError
 from projectkate.run_context import run
@@ -20,4 +21,4 @@ async def poll_run_status(
     )
 
 
-__all__ = ["init", "trace", "run", "poll_run_status", "KateRemoteError"]
+__all__ = ["init", "trace", "run", "poll_run_status", "KateRemoteError", "KateClient"]

@@ -48,7 +48,7 @@ class ArtifactsClient:
 
     async def create_from_agent(self, agent_id: str) -> Artifact:
         data = await self._client._request(
-            "POST", "/artifacts/extract-from-agent", json={"agent_id": agent_id}
+            "POST", f"/artifacts/extract-from-agent/{agent_id}"
         )
         return _to_artifact(data)
 

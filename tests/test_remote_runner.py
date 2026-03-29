@@ -25,15 +25,14 @@ def runner():
 @pytest.mark.asyncio
 async def test_start_run(runner):
     mock_response = httpx.Response(
-        200, json={"id": "run-456", "phoenix_project": "user_1_agent_123"},
+        200, json={"id": "run-456", "status": "running"},
         request=_DUMMY_REQUEST,
     )
     with patch.object(runner, "_get_client") as mock_client:
         mock_client.return_value.post = AsyncMock(return_value=mock_response)
         result = await runner.start_run("run-456", "automatic")
 
-    assert result == {"id": "run-456", "phoenix_project": "user_1_agent_123"}
-    assert runner.phoenix_project == "user_1_agent_123"
+    assert result == {"id": "run-456", "status": "running"}
     mock_client.return_value.post.assert_called_once_with(
         "/agents/agent-123/runs",
         json={"run_id": "run-456", "trigger": "automatic"},
@@ -42,7 +41,7 @@ async def test_start_run(runner):
 
 @pytest.mark.asyncio
 async def test_start_run_returns_full_dict(runner):
-    resp_data = {"id": "run-789", "phoenix_project": "proj_abc", "status": "pending"}
+    resp_data = {"id": "run-789", "status": "running"}
     mock_response = httpx.Response(200, json=resp_data, request=_DUMMY_REQUEST)
     with patch.object(runner, "_get_client") as mock_client:
         mock_client.return_value.post = AsyncMock(return_value=mock_response)
@@ -50,8 +49,7 @@ async def test_start_run_returns_full_dict(runner):
 
     assert isinstance(result, dict)
     assert result["id"] == "run-789"
-    assert result["phoenix_project"] == "proj_abc"
-    assert runner.phoenix_project == "proj_abc"
+    assert result["status"] == "running"
 
 
 @pytest.mark.asyncio

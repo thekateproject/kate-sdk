@@ -27,7 +27,6 @@ class RemoteEvalRunner:
         self.agent_name = agent_name
         self.agent_objective = agent_objective
         self.agent_domain = agent_domain or "general"
-        self.phoenix_project: str | None = None
         self._client: httpx.AsyncClient | None = None
 
     def _get_client(self) -> httpx.AsyncClient:
@@ -109,9 +108,7 @@ class RemoteEvalRunner:
             json={"run_id": run_id, "trigger": trigger},
         )
         self._handle_response(resp, "start run")
-        data = resp.json()
-        self.phoenix_project = data.get("phoenix_project")
-        return data
+        return resp.json()
 
     async def upload_spans(self, run_id: str, spans: list[SpanRecord]) -> None:
         """POST /agents/{id}/runs/{run_id}/spans — upload traced spans."""

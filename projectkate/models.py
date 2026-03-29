@@ -34,11 +34,14 @@ class EvalSummary:
 @dataclass
 class DiscoveryConfig:
     agent_id: str
-    enabled: bool = False
-    budget_tokens: int = 0
-    auto_purchase: bool = False
-    max_price_tokens: int = 0
-    preferred_domains: list[str] = field(default_factory=list)
+    mode: str = "manual"
+    interval_hours: int = 24
+    max_tokens_per_action: int = 500
+    daily_action_limit: int = 3
+    min_compatibility_score: float = 0.5
+    max_candidates_per_gap: int = 3
+    last_run_at: str | None = None
+    actions_today: int = 0
 
 
 @dataclass

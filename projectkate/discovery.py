@@ -20,11 +20,14 @@ class DiscoveryClient:
         )
         return DiscoveryConfig(
             agent_id=str(data.get("agent_id", agent_id)),
-            enabled=data.get("enabled", False),
-            budget_tokens=data.get("budget_tokens", 0),
-            auto_purchase=data.get("auto_purchase", False),
-            max_price_tokens=data.get("max_price_tokens", 0),
-            preferred_domains=data.get("preferred_domains", []),
+            mode=data.get("mode", "manual"),
+            interval_hours=data.get("interval_hours", 24),
+            max_tokens_per_action=data.get("max_tokens_per_action", 500),
+            daily_action_limit=data.get("daily_action_limit", 3),
+            min_compatibility_score=data.get("min_compatibility_score", 0.5),
+            max_candidates_per_gap=data.get("max_candidates_per_gap", 3),
+            last_run_at=data.get("last_run_at"),
+            actions_today=data.get("actions_today", 0),
         )
 
     async def configure(self, agent_id: str, **kwargs: object) -> DiscoveryConfig:
@@ -33,11 +36,14 @@ class DiscoveryClient:
         )
         return DiscoveryConfig(
             agent_id=str(data.get("agent_id", agent_id)),
-            enabled=data.get("enabled", False),
-            budget_tokens=data.get("budget_tokens", 0),
-            auto_purchase=data.get("auto_purchase", False),
-            max_price_tokens=data.get("max_price_tokens", 0),
-            preferred_domains=data.get("preferred_domains", []),
+            mode=data.get("mode", "manual"),
+            interval_hours=data.get("interval_hours", 24),
+            max_tokens_per_action=data.get("max_tokens_per_action", 500),
+            daily_action_limit=data.get("daily_action_limit", 3),
+            min_compatibility_score=data.get("min_compatibility_score", 0.5),
+            max_candidates_per_gap=data.get("max_candidates_per_gap", 3),
+            last_run_at=data.get("last_run_at"),
+            actions_today=data.get("actions_today", 0),
         )
 
     async def run(self, agent_id: str) -> dict:

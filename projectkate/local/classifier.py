@@ -1,4 +1,4 @@
-"""Node classification (copied from server, no DB deps)."""
+"""Node classification for eval pipeline spans."""
 
 from __future__ import annotations
 

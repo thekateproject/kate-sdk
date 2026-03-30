@@ -1,4 +1,4 @@
-"""Multi-provider LLM client abstraction (copied from server, no DB deps)."""
+"""Multi-provider LLM client abstraction."""
 
 from __future__ import annotations
 

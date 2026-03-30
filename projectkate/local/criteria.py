@@ -1,4 +1,4 @@
-"""Auto-generate GEval criteria (copied from server, no DB deps)."""
+"""Auto-generate GEval criteria from classified spans."""
 
 from __future__ import annotations
 

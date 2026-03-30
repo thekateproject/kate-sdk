@@ -1,4 +1,4 @@
-"""Metric mapper + runner (copied from server, no DB deps)."""
+"""Metric mapper and runner for classified spans."""
 
 from __future__ import annotations
 

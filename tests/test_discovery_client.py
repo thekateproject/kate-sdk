@@ -21,40 +21,42 @@ def client():
 async def test_discovery_get_config(client):
     config_data = {
         "agent_id": "agent-123",
-        "enabled": True,
-        "budget_tokens": 5000,
-        "auto_purchase": True,
-        "max_price_tokens": 1000,
-        "preferred_domains": ["seo", "marketing"],
+        "mode": "autonomous",
+        "max_tokens_per_action": 500,
+        "interval_hours": 24,
+        "daily_action_limit": 3,
+        "min_compatibility_score": 0.5,
+        "max_candidates_per_gap": 3,
     }
     mock_resp = httpx.Response(200, json=config_data, request=_DUMMY_REQUEST)
     with patch.object(client, "_get_http") as mock_http:
         mock_http.return_value.request = AsyncMock(return_value=mock_resp)
         config = await client.discovery.get_config("agent-123")
 
-    assert config.enabled is True
-    assert config.budget_tokens == 5000
-    assert config.preferred_domains == ["seo", "marketing"]
+    assert config.mode == "autonomous"
+    assert config.max_tokens_per_action == 500
+    assert config.max_candidates_per_gap == 3
 
 
 @pytest.mark.asyncio
 async def test_discovery_configure(client):
     updated = {
         "agent_id": "agent-123",
-        "enabled": True,
-        "budget_tokens": 10000,
-        "auto_purchase": False,
-        "max_price_tokens": 500,
-        "preferred_domains": [],
+        "mode": "autonomous",
+        "max_tokens_per_action": 1000,
+        "interval_hours": 12,
+        "daily_action_limit": 5,
+        "min_compatibility_score": 0.7,
+        "max_candidates_per_gap": 5,
     }
     mock_resp = httpx.Response(200, json=updated, request=_DUMMY_REQUEST)
     with patch.object(client, "_get_http") as mock_http:
         mock_http.return_value.request = AsyncMock(return_value=mock_resp)
-        config = await client.discovery.configure("agent-123", budget_tokens=10000)
+        config = await client.discovery.configure("agent-123", max_tokens_per_action=1000)
 
-    assert config.budget_tokens == 10000
+    assert config.max_tokens_per_action == 1000
     call_args = mock_http.return_value.request.call_args
-    assert call_args[1]["json"]["budget_tokens"] == 10000
+    assert call_args[1]["json"]["max_tokens_per_action"] == 1000
 
 
 @pytest.mark.asyncio

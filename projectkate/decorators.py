@@ -12,6 +12,13 @@ from projectkate._state import KateSDK
 from projectkate.context import SpanRecord
 
 
+_REDACT_KEYS = frozenset({"api_key", "password", "token", "secret", "credentials"})
+
+
+def _redact_kwargs(kwargs: dict) -> dict:
+    return {k: "[REDACTED]" if k in _REDACT_KEYS else v for k, v in kwargs.items()}
+
+
 def _serialize(value: Any) -> str:
     """Best-effort serialization of function args/return values."""
     try:
@@ -51,7 +58,7 @@ def trace(name: str | None = None, *, span_kind: str = "LLM") -> Callable:
             @functools.wraps(fn)
             async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
                 sdk = KateSDK.get()
-                input_str = _serialize({"args": args, "kwargs": kwargs})
+                input_str = _serialize({"args": args, "kwargs": _redact_kwargs(kwargs)})
                 start = time.perf_counter()
                 error = None
                 output = None
@@ -73,7 +80,7 @@ def trace(name: str | None = None, *, span_kind: str = "LLM") -> Callable:
         @functools.wraps(fn)
         def sync_wrapper(*args: Any, **kwargs: Any) -> Any:
             sdk = KateSDK.get()
-            input_str = _serialize({"args": args, "kwargs": kwargs})
+            input_str = _serialize({"args": args, "kwargs": _redact_kwargs(kwargs)})
             start = time.perf_counter()
             error = None
             output = None

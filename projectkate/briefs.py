@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from projectkate._validation import validate_id
 from projectkate.models import Brief, BriefDiff, BriefVersion
 
 if TYPE_CHECKING:
@@ -16,6 +17,7 @@ class BriefsClient:
         self._client = client
 
     async def get(self, agent_id: str, version: str = "latest") -> Brief:
+        validate_id(agent_id, "agent_id")
         params = {"version": version} if version != "latest" else {}
         data = await self._client._request(
             "GET", f"/agents/{agent_id}/brief", params=params
@@ -30,6 +32,7 @@ class BriefsClient:
         )
 
     async def version(self, agent_id: str) -> BriefVersion:
+        validate_id(agent_id, "agent_id")
         data = await self._client._request(
             "GET", f"/agents/{agent_id}/brief/version"
         )
@@ -43,6 +46,7 @@ class BriefsClient:
     async def diff(
         self, agent_id: str, from_version: str, to_version: str
     ) -> BriefDiff:
+        validate_id(agent_id, "agent_id")
         data = await self._client._request(
             "GET",
             f"/agents/{agent_id}/brief/diff",

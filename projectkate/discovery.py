@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from projectkate._validation import validate_id
 from projectkate.models import DiscoveryAction, DiscoveryConfig
 
 if TYPE_CHECKING:
@@ -15,6 +16,7 @@ class DiscoveryClient:
         self._client = client
 
     async def get_config(self, agent_id: str) -> DiscoveryConfig:
+        validate_id(agent_id, "agent_id")
         data = await self._client._request(
             "GET", f"/agents/{agent_id}/discovery/config"
         )
@@ -31,6 +33,7 @@ class DiscoveryClient:
         )
 
     async def configure(self, agent_id: str, **kwargs: object) -> DiscoveryConfig:
+        validate_id(agent_id, "agent_id")
         data = await self._client._request(
             "PUT", f"/agents/{agent_id}/discovery/config", json=kwargs
         )
@@ -48,6 +51,7 @@ class DiscoveryClient:
 
     async def run(self, agent_id: str) -> dict:
         """Trigger a discovery cycle. Returns 202 with status info."""
+        validate_id(agent_id, "agent_id")
         return await self._client._request(
             "POST", f"/agents/{agent_id}/discovery/run"
         )
@@ -55,6 +59,7 @@ class DiscoveryClient:
     async def list_actions(
         self, agent_id: str, limit: int = 20, offset: int = 0
     ) -> list[DiscoveryAction]:
+        validate_id(agent_id, "agent_id")
         data = await self._client._request(
             "GET",
             f"/agents/{agent_id}/discovery/actions",

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import threading
 from typing import TYPE_CHECKING
 
 from projectkate.constants import (
@@ -18,6 +19,9 @@ if TYPE_CHECKING:
     from projectkate.remote.runner import RemoteEvalRunner
 
 logger = logging.getLogger(__name__)
+
+
+_lock = threading.Lock()
 
 
 class KateSDK:
@@ -36,7 +40,9 @@ class KateSDK:
     @classmethod
     def get(cls) -> KateSDK:
         if cls._instance is None:
-            cls._instance = cls()
+            with _lock:
+                if cls._instance is None:
+                    cls._instance = cls()
         return cls._instance
 
     @classmethod
@@ -82,6 +88,10 @@ class KateSDK:
         if api_url:
             # Remote mode
             self.mode = "remote"
+            if not api_key:
+                raise ValueError(
+                    "api_key is required when api_url is set (remote mode)"
+                )
             if not agent_id and not agent_name:
                 raise ValueError(
                     "Remote mode requires either agent_id= or agent_name=. "

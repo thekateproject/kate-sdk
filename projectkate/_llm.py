@@ -32,7 +32,7 @@ class LLMClient(ABC):
 
 class AnthropicLLMClient(LLMClient):
     def __init__(self, api_key: str, model: str = DEFAULT_ANTHROPIC_MODEL):
-        self.api_key = api_key
+        self._api_key = api_key
         self.model = model
         self._client = None
 
@@ -40,7 +40,7 @@ class AnthropicLLMClient(LLMClient):
         import anthropic
 
         if self._client is None:
-            self._client = anthropic.AsyncAnthropic(api_key=self.api_key)
+            self._client = anthropic.AsyncAnthropic(api_key=self._api_key)
         return self._client
 
     async def generate(
@@ -75,7 +75,7 @@ class AnthropicLLMClient(LLMClient):
 
 class OpenAILLMClient(LLMClient):
     def __init__(self, api_key: str, model: str = DEFAULT_OPENAI_MODEL):
-        self.api_key = api_key
+        self._api_key = api_key
         self.model = model
         self._client = None
 
@@ -83,7 +83,7 @@ class OpenAILLMClient(LLMClient):
         import openai
 
         if self._client is None:
-            self._client = openai.AsyncOpenAI(api_key=self.api_key)
+            self._client = openai.AsyncOpenAI(api_key=self._api_key)
         return self._client
 
     async def generate(

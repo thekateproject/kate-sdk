@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from projectkate._validation import validate_id
 from projectkate.models import Agent
 
 if TYPE_CHECKING:
@@ -32,6 +33,7 @@ class AgentsClient:
         return [_to_agent(a) for a in data]
 
     async def get(self, agent_id: str) -> Agent:
+        validate_id(agent_id, "agent_id")
         data = await self._client._request("GET", f"/agents/{agent_id}")
         return _to_agent(data)
 
@@ -48,8 +50,10 @@ class AgentsClient:
         return _to_agent(data)
 
     async def update(self, agent_id: str, **kwargs: object) -> Agent:
+        validate_id(agent_id, "agent_id")
         data = await self._client._request("PATCH", f"/agents/{agent_id}", json=kwargs)
         return _to_agent(data)
 
     async def delete(self, agent_id: str) -> dict:
+        validate_id(agent_id, "agent_id")
         return await self._client._request("DELETE", f"/agents/{agent_id}")

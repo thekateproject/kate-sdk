@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from projectkate._validation import validate_id
 from projectkate.models import EvalSummary
 
 if TYPE_CHECKING:
@@ -15,6 +16,7 @@ class EvalsClient:
         self._client = client
 
     async def summary(self, agent_id: str) -> EvalSummary:
+        validate_id(agent_id, "agent_id")
         data = await self._client._request("GET", f"/agents/{agent_id}/eval/summary")
         return EvalSummary(
             intelligence_summary=data["intelligence_summary"],

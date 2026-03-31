@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from projectkate._validation import validate_id
 from projectkate.models import Artifact, ArtifactAnalytics
 
 if TYPE_CHECKING:
@@ -43,10 +44,12 @@ class ArtifactsClient:
         return [_to_artifact(a) for a in items]
 
     async def get(self, artifact_id: str) -> Artifact:
+        validate_id(artifact_id, "artifact_id")
         data = await self._client._request("GET", f"/artifacts/{artifact_id}")
         return _to_artifact(data)
 
     async def create_from_agent(self, agent_id: str) -> Artifact:
+        validate_id(agent_id, "agent_id")
         data = await self._client._request(
             "POST", f"/artifacts/extract-from-agent/{agent_id}"
         )
@@ -71,6 +74,7 @@ class ArtifactsClient:
         return _to_artifact(data)
 
     async def analyze_coverage(self, artifact_id: str) -> Artifact:
+        validate_id(artifact_id, "artifact_id")
         data = await self._client._request(
             "POST", f"/artifacts/{artifact_id}/analyze-coverage"
         )
@@ -78,12 +82,14 @@ class ArtifactsClient:
 
     async def publish(self, artifact_id: str) -> Artifact:
         """Publish an artifact. Auto-generates cover if missing."""
+        validate_id(artifact_id, "artifact_id")
         data = await self._client._request(
             "POST", f"/artifacts/{artifact_id}/publish"
         )
         return _to_artifact(data)
 
     async def analytics(self, artifact_id: str) -> ArtifactAnalytics:
+        validate_id(artifact_id, "artifact_id")
         data = await self._client._request(
             "GET", f"/artifacts/{artifact_id}/analytics"
         )

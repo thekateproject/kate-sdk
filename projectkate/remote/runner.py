@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import asyncio
 import time
+import warnings
 from typing import TYPE_CHECKING
 
 import httpx
+
+from projectkate._validation import validate_id
 
 if TYPE_CHECKING:
     from projectkate.context import SpanRecord
@@ -22,18 +25,27 @@ class RemoteEvalRunner:
         agent_objective: str | None = None, agent_domain: str | None = None,
     ):
         self.api_url = api_url.rstrip("/")
-        self.api_key = api_key
+        self._api_key = api_key
         self.agent_id = agent_id
         self.agent_name = agent_name
         self.agent_objective = agent_objective
         self.agent_domain = agent_domain or "general"
         self._client: httpx.AsyncClient | None = None
+        if (
+            not api_url.startswith("https://")
+            and "localhost" not in api_url
+            and "127.0.0.1" not in api_url
+        ):
+            warnings.warn(
+                "KATE API URL uses HTTP — API keys may be transmitted in plaintext",
+                stacklevel=2,
+            )
 
     def _get_client(self) -> httpx.AsyncClient:
         if self._client is None:
             self._client = httpx.AsyncClient(
                 base_url=self.api_url,
-                headers={"x-api-key": self.api_key},
+                headers={"x-api-key": self._api_key},
                 timeout=30.0,
             )
         return self._client
@@ -64,6 +76,10 @@ class RemoteEvalRunner:
             raise KateRemoteError(
                 f"[KATE] Validation error during {operation} (422). "
                 f"Detail: {detail}"
+            )
+        if code >= 500:
+            raise KateRemoteError(
+                f"[KATE] {operation} failed with status {code}. Internal server error"
             )
         raise KateRemoteError(
             f"[KATE] {operation} failed with status {code}. Detail: {detail}"
@@ -102,6 +118,7 @@ class RemoteEvalRunner:
 
     async def start_run(self, run_id: str, trigger: str = "manual") -> dict:
         """POST /agents/{id}/runs — create a new eval run. Returns full response dict."""
+        validate_id(run_id, "run_id")
         await self.ensure_agent()
         resp = await self._get_client().post(
             f"/agents/{self.agent_id}/runs",
@@ -112,6 +129,7 @@ class RemoteEvalRunner:
 
     async def upload_spans(self, run_id: str, spans: list[SpanRecord]) -> None:
         """POST /agents/{id}/runs/{run_id}/spans — upload traced spans."""
+        validate_id(run_id, "run_id")
         payload = [
             {
                 "name": s.name,
@@ -133,6 +151,7 @@ class RemoteEvalRunner:
 
     async def complete_run(self, run_id: str) -> None:
         """POST /agents/{id}/runs/{run_id}/complete — trigger server-side eval."""
+        validate_id(run_id, "run_id")
         resp = await self._get_client().post(
             f"/agents/{self.agent_id}/runs/{run_id}/complete",
         )
@@ -142,6 +161,7 @@ class RemoteEvalRunner:
         self, run_id: str, *, interval_seconds: float = 2.0, timeout_seconds: float = 300.0,
     ) -> dict:
         """Poll GET /agents/{id}/runs/{run_id} until terminal status."""
+        validate_id(run_id, "run_id")
         deadline = time.monotonic() + timeout_seconds
         while time.monotonic() < deadline:
             resp = await self._get_client().get(

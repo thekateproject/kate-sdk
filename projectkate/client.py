@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from typing import Any, TYPE_CHECKING
 
 import httpx
@@ -39,6 +40,15 @@ class KateClient:
         self._base_url = base_url.rstrip("/")
         self._timeout = timeout
         self._http: httpx.AsyncClient | None = None
+        if (
+            not base_url.startswith("https://")
+            and "localhost" not in base_url
+            and "127.0.0.1" not in base_url
+        ):
+            warnings.warn(
+                "KATE API URL uses HTTP — API keys may be transmitted in plaintext",
+                stacklevel=2,
+            )
 
         # Lazy sub-clients
         self._agents: AgentsClient | None = None
@@ -165,6 +175,10 @@ def _handle_response(resp: httpx.Response, operation: str) -> None:
     if code == 404:
         raise KateRemoteError(
             f"[KATE] Resource not found during {operation} (404). Detail: {detail}"
+        )
+    if code >= 500:
+        raise KateRemoteError(
+            f"[KATE] {operation} failed with status {code}. Internal server error"
         )
     raise KateRemoteError(
         f"[KATE] {operation} failed with status {code}. Detail: {detail}"

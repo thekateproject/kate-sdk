@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from projectkate._validation import validate_id
 from projectkate.models import RunSummary
 
 if TYPE_CHECKING:
@@ -17,6 +18,7 @@ class RunsClient:
     async def list(
         self, agent_id: str, limit: int = 5, offset: int = 0
     ) -> list[RunSummary]:
+        validate_id(agent_id, "agent_id")
         data = await self._client._request(
             "GET",
             f"/agents/{agent_id}/runs",

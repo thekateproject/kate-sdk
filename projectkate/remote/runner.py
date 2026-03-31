@@ -41,6 +41,9 @@ class RemoteEvalRunner:
                 stacklevel=2,
             )
 
+    def __repr__(self) -> str:
+        return f"RemoteEvalRunner(api_url={self.api_url!r}, agent_id={self.agent_id!r})"
+
     def _get_client(self) -> httpx.AsyncClient:
         if self._client is None:
             self._client = httpx.AsyncClient(

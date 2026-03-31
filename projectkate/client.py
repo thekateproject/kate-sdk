@@ -59,6 +59,9 @@ class KateClient:
         self._wallet: WalletClient | None = None
         self._runs: RunsClient | None = None
 
+    def __repr__(self) -> str:
+        return f"KateClient(base_url={self._base_url!r})"
+
     def _get_http(self) -> httpx.AsyncClient:
         if self._http is None:
             self._http = httpx.AsyncClient(

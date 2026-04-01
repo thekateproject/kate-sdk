@@ -69,6 +69,8 @@ class BriefsClient:
     ) -> Path:
         """Fetch the brief and write it to a local file."""
         brief = await self.get(agent_id, version=version)
-        out = Path(path)
+        out = Path(path).resolve()
+        if not out.parent.exists():
+            raise FileNotFoundError(f"Export directory does not exist: {out.parent}")
         out.write_text(brief.brief, encoding="utf-8")
         return out

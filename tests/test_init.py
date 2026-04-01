@@ -48,7 +48,7 @@ def test_remote_mode_with_kwargs():
 
 def test_remote_mode_from_env():
     env = {
-        "KATE_API_URL": "http://myserver:8000",
+        "KATE_API_URL": "https://myserver:8000",
         "KATE_API_KEY": "mykey",
         "KATE_AGENT_ID": "agent-1",
     }

@@ -4,7 +4,7 @@
 
 # KATE SDK
 
-Auto-eval and observability for AI agents. Trace every LLM call, run evaluations locally or against a KATE server, and catch regressions before they ship.
+Auto-eval and observability for AI agents. Trace every LLM call, run evaluations, and catch regressions before they ship.
 
 ## Install
 
@@ -15,13 +15,19 @@ pip install projectkate
 ### Optional instrumentation extras
 
 ```bash
-pip install projectkate[openai]                # Auto-instrument OpenAI SDK
-pip install projectkate[anthropic-instrument]  # Auto-instrument Anthropic SDK
-pip install projectkate[langchain]             # Auto-instrument LangChain / LangGraph
+pip install projectkate[openai]                # OpenAI
+pip install projectkate[anthropic-instrument]  # Anthropic
+pip install projectkate[langchain]             # LangChain / LangGraph
+pip install projectkate[mistral]               # Mistral
+pip install projectkate[vertexai]              # Vertex AI
+pip install projectkate[google-genai]          # Google GenAI
+pip install projectkate[crewai]                # CrewAI
 pip install projectkate[all]                   # All supported providers
 ```
 
 ## Quick Start
+
+### Trace mode — instrument your agent
 
 ```python
 import projectkate
@@ -29,7 +35,6 @@ import projectkate
 # Initialize — reads KATE_API_URL, KATE_API_KEY, KATE_AGENT_ID from env
 projectkate.init()
 
-# Trace any function that calls an LLM
 @projectkate.trace("summarize")
 def summarize(text: str) -> str:
     return client.messages.create(
@@ -37,10 +42,28 @@ def summarize(text: str) -> str:
         messages=[{"role": "user", "content": f"Summarize: {text}"}],
     ).content[0].text
 
-# Run context: creates a run, captures traces, triggers eval on exit
 async with projectkate.run() as ctx:
     result = summarize("Today's top news stories...")
     ctx.output(result)
+```
+
+### Management client — programmatic platform access
+
+```python
+from projectkate import KateClient
+
+async with KateClient(api_key="kate_...") as kate:
+    # List your agents
+    agents = await kate.agents.list()
+
+    # Check eval results for a run
+    evals = await kate.evals.get_run_evals(run_id="...")
+
+    # Publish an artifact
+    await kate.artifacts.publish(artifact_id="...")
+
+    # Check wallet balance
+    balance = await kate.wallet.get_balance()
 ```
 
 ## How KATE Compares
@@ -70,7 +93,7 @@ runner.print_results(results)
 
 ## Documentation
 
-- [Getting Started](docs/getting_started.md) — full integration guide
+- [Docs](https://docs.projectkate.com) — guides, API reference, and examples
 - [Examples](examples/) — runnable example agents
 
 ## License

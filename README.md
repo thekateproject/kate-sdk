@@ -94,7 +94,6 @@ runner.print_results(results)
 ## Documentation
 
 - [Docs](https://docs.projectkate.com) — guides, API reference, and examples
-- [Examples](examples/) — runnable example agents
 
 ## License
 

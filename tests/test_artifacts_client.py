@@ -9,7 +9,7 @@ import pytest
 
 from projectkate.client import KateClient
 
-_DUMMY_REQUEST = httpx.Request("GET", "http://kate.test:8000/test")
+_DUMMY_REQUEST = httpx.Request("GET", "https://kate.test:8000/test")
 
 _ARTIFACT_DATA = {
     "id": "art-123",
@@ -33,7 +33,7 @@ _ARTIFACT_DATA = {
 
 @pytest.fixture
 def client():
-    return KateClient(api_key="test-key", base_url="http://kate.test:8000")
+    return KateClient(api_key="test-key", base_url="https://kate.test:8000")
 
 
 @pytest.mark.asyncio

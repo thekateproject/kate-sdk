@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from typing import Any, TYPE_CHECKING
 
 import httpx
@@ -45,9 +44,9 @@ class KateClient:
             and "localhost" not in base_url
             and "127.0.0.1" not in base_url
         ):
-            warnings.warn(
-                "KATE API URL uses HTTP — API keys may be transmitted in plaintext",
-                stacklevel=2,
+            raise ValueError(
+                "KATE API URL must use HTTPS. "
+                "Plaintext HTTP is only allowed for localhost/127.0.0.1."
             )
 
         # Lazy sub-clients

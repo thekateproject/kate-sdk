@@ -62,7 +62,9 @@ class ArtifactsClient:
         agent_id: str | None = None,
         domain: str = "general",
     ) -> Artifact:
-        path = Path(file_path)
+        path = Path(file_path).resolve()
+        if not path.is_file():
+            raise FileNotFoundError(f"Upload path does not exist or is not a file: {file_path}")
         with open(path, "rb") as f:
             files = {"file": (path.name, f, "application/octet-stream")}
             form_data = {"title": name, "domain": domain}

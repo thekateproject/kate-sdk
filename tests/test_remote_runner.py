@@ -10,13 +10,13 @@ import pytest
 from projectkate.context import SpanRecord
 from projectkate.remote.runner import KateRemoteError, RemoteEvalRunner
 
-_DUMMY_REQUEST = httpx.Request("POST", "http://kate.test:8000/test")
+_DUMMY_REQUEST = httpx.Request("POST", "https://kate.test:8000/test")
 
 
 @pytest.fixture
 def runner():
     return RemoteEvalRunner(
-        api_url="http://kate.test:8000",
+        api_url="https://kate.test:8000",
         api_key="test-key",
         agent_id="agent-123",
     )
@@ -99,7 +99,7 @@ async def test_error_handling(runner):
 @pytest.mark.asyncio
 async def test_agent_domain_in_ensure_agent():
     runner = RemoteEvalRunner(
-        api_url="http://kate.test:8000",
+        api_url="https://kate.test:8000",
         api_key="test-key",
         agent_id="",
         agent_name="my-agent",

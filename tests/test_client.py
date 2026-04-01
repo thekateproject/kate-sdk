@@ -10,12 +10,12 @@ import pytest
 from projectkate.client import KateClient
 from projectkate.remote.runner import KateRemoteError
 
-_DUMMY_REQUEST = httpx.Request("GET", "http://kate.test:8000/test")
+_DUMMY_REQUEST = httpx.Request("GET", "https://kate.test:8000/test")
 
 
 @pytest.fixture
 def client():
-    return KateClient(api_key="test-key", base_url="http://kate.test:8000")
+    return KateClient(api_key="test-key", base_url="https://kate.test:8000")
 
 
 @pytest.mark.asyncio
@@ -55,7 +55,7 @@ async def test_request_not_found(client):
 
 @pytest.mark.asyncio
 async def test_context_manager():
-    client = KateClient(api_key="test-key", base_url="http://kate.test:8000")
+    client = KateClient(api_key="test-key", base_url="https://kate.test:8000")
     async with client as c:
         assert c is client
 

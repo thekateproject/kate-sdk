@@ -66,17 +66,6 @@ async with KateClient(api_key="kate_...") as kate:
     balance = await kate.wallet.get_balance()
 ```
 
-## How KATE Compares
-
-| Feature | KATE | LangSmith | Arize Phoenix |
-| --- | --- | --- | --- |
-| Built for agentic loops | Yes | Partial (RAG-focused) | Partial |
-| Auto-instrumentation | Yes, zero-config | Manual setup | Manual setup |
-| Hallucination detection | Built-in | Separate tool needed | Built-in |
-| Open source | Yes | No | Yes |
-| Framework agnostic | Yes | LangChain-first | Yes |
-| Self-hostable | Yes | No | Yes |
-
 ## Local Eval (no server needed)
 
 Run evaluations locally against your agent with zero infrastructure:

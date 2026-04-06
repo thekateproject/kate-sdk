@@ -5,19 +5,22 @@ from __future__ import annotations
 import asyncio
 import functools
 import json
+import logging
 import time
 from typing import Any, Callable
 
 from projectkate._state import KateSDK
 from projectkate.context import SpanRecord
 
+logger = logging.getLogger(__name__)
 
 _REDACT_KEYS = frozenset({"api_key", "password", "token", "secret", "credentials"})
 
-# Extension caching and A/B state
+# Extension caching and A/B state (guarded by _ext_lock in async contexts)
 _extension_cache: dict[str, tuple[Any, float]] = {}
 _CACHE_TTL = 300  # 5 minutes
 _ab_counters: dict[str, int] = {}
+_ext_lock = asyncio.Lock()
 
 
 def _redact_kwargs(kwargs: dict) -> dict:
@@ -84,7 +87,7 @@ def trace(name: str | None = None, *, span_kind: str = "LLM", kind: str | None =
                             ext = await _get_cached_extension(sdk, span_name)
                             if ext and ext.status == "active":
                                 extension_id = ext.id
-                                if _should_use_enhanced(ext.id):
+                                if await _should_use_enhanced(ext.id):
                                     result = await _execute_extension(
                                         sdk, span_name,
                                         {"original_input": input_str,
@@ -101,7 +104,7 @@ def trace(name: str | None = None, *, span_kind: str = "LLM", kind: str | None =
                                     else:
                                         await _report_ab(sdk, ext.id, enhanced_won=False)
                         except Exception:
-                            pass  # Never break original function
+                            logger.debug("Extension hook failed for %s", span_name, exc_info=True)
 
                     return output
                 except Exception as exc:
@@ -113,7 +116,7 @@ def trace(name: str | None = None, *, span_kind: str = "LLM", kind: str | None =
                         _record(sdk, input_str, output, error, duration_ms,
                                 enhanced=enhanced, extension_id=extension_id)
                     except Exception:
-                        pass
+                        logger.debug("Failed to record span for %s", span_name, exc_info=True)
 
             return async_wrapper
 
@@ -135,7 +138,7 @@ def trace(name: str | None = None, *, span_kind: str = "LLM", kind: str | None =
                 try:
                     _record(sdk, input_str, output, error, duration_ms)
                 except Exception:
-                    pass
+                    logger.debug("Failed to record span for %s", span_name, exc_info=True)
 
         return sync_wrapper
 
@@ -144,37 +147,40 @@ def trace(name: str | None = None, *, span_kind: str = "LLM", kind: str | None =
 
 async def _get_cached_extension(sdk: KateSDK, function_name: str):
     """Fetch extension metadata, cached for 5 minutes."""
-    cached = _extension_cache.get(function_name)
-    if cached and (time.time() - cached[1]) < _CACHE_TTL:
-        return cached[0]
-    runner = sdk._remote_runner
-    from projectkate.extensions import Extension
-    try:
-        client = runner._get_client()
-        resp = await client.get(f"/extensions/{runner.agent_id}/{function_name}")
-        if resp.status_code == 404:
+    async with _ext_lock:
+        cached = _extension_cache.get(function_name)
+        if cached and (time.time() - cached[1]) < _CACHE_TTL:
+            return cached[0]
+        runner = sdk._remote_runner
+        from projectkate.extensions import Extension
+        try:
+            client = runner._get_client()
+            resp = await client.get(f"/extensions/{runner.agent_id}/{function_name}")
+            if resp.status_code == 404:
+                ext = None
+            elif resp.is_success:
+                data = resp.json()
+                ext = Extension(
+                    id=str(data["id"]),
+                    target_function=data["target_function"],
+                    status=data["status"],
+                    version=data["version"],
+                )
+            else:
+                ext = None
+        except Exception:
+            logger.debug("Failed to fetch extension for %s", function_name, exc_info=True)
             ext = None
-        elif resp.is_success:
-            data = resp.json()
-            ext = Extension(
-                id=str(data["id"]),
-                target_function=data["target_function"],
-                status=data["status"],
-                version=data["version"],
-            )
-        else:
-            ext = None
-    except Exception:
-        ext = None
-    _extension_cache[function_name] = (ext, time.time())
-    return ext
+        _extension_cache[function_name] = (ext, time.time())
+        return ext
 
 
-def _should_use_enhanced(extension_id: str) -> bool:
+async def _should_use_enhanced(extension_id: str) -> bool:
     """A/B alternation: even calls → original, odd calls → enhanced."""
-    counter = _ab_counters.get(extension_id, 0)
-    _ab_counters[extension_id] = counter + 1
-    return counter % 2 == 1
+    async with _ext_lock:
+        counter = _ab_counters.get(extension_id, 0)
+        _ab_counters[extension_id] = counter + 1
+        return counter % 2 == 1
 
 
 async def _execute_extension(sdk: KateSDK, function_name: str, input_data: dict):
@@ -200,4 +206,4 @@ async def _report_ab(sdk: KateSDK, extension_id: str, *, enhanced_won: bool):
             json={"extension_id": extension_id, "enhanced_won": enhanced_won},
         )
     except Exception:
-        pass
+        logger.debug("Failed to report A/B result for extension %s", extension_id, exc_info=True)

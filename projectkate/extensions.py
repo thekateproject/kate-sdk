@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from projectkate._validation import validate_id
+from projectkate.remote.runner import KateRemoteError
 
 if TYPE_CHECKING:
     from projectkate.client import KateClient
@@ -36,8 +37,10 @@ class ExtensionsClient:
                 status=data["status"],
                 version=data["version"],
             )
-        except Exception:
-            return None
+        except KateRemoteError as exc:
+            if "404" in str(exc):
+                return None
+            raise
 
     async def execute(
         self, agent_id: str, function_name: str, input_data: dict

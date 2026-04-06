@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from projectkate.briefs import BriefsClient
     from projectkate.discovery import DiscoveryClient
     from projectkate.evals import EvalsClient
+    from projectkate.extensions import ExtensionsClient
     from projectkate.runs import RunsClient
     from projectkate.wallet import WalletClient
 
@@ -57,6 +58,7 @@ class KateClient:
         self._artifacts: ArtifactsClient | None = None
         self._wallet: WalletClient | None = None
         self._runs: RunsClient | None = None
+        self._extensions: ExtensionsClient | None = None
 
     def __repr__(self) -> str:
         return f"KateClient(base_url={self._base_url!r})"
@@ -138,6 +140,13 @@ class KateClient:
             from projectkate.wallet import WalletClient
             self._wallet = WalletClient(self)
         return self._wallet
+
+    @property
+    def extensions(self) -> ExtensionsClient:
+        if self._extensions is None:
+            from projectkate.extensions import ExtensionsClient
+            self._extensions = ExtensionsClient(self)
+        return self._extensions
 
     @property
     def runs(self) -> RunsClient:

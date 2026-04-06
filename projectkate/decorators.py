@@ -92,7 +92,11 @@ def trace(name: str | None = None, *, span_kind: str = "LLM", kind: str | None =
                                     )
                                     if result and result.get("success"):
                                         enhanced = True
-                                        output = result.get("output", output)
+                                        raw_output = result.get("output", output)
+                                        if isinstance(raw_output, dict) and "enhanced_output" in raw_output:
+                                            output = raw_output["enhanced_output"]
+                                        else:
+                                            output = raw_output
                                         await _report_ab(sdk, ext.id, enhanced_won=True)
                                     else:
                                         await _report_ab(sdk, ext.id, enhanced_won=False)

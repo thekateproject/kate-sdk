@@ -32,7 +32,7 @@ def _serialize(value: Any) -> str:
         return str(value)
 
 
-def trace(name: str | None = None, *, span_kind: str = "LLM") -> Callable:
+def trace(name: str | None = None, *, span_kind: str = "LLM", kind: str | None = None) -> Callable:
     """Decorator factory that records a span for each function call.
 
     Usage::
@@ -44,6 +44,7 @@ def trace(name: str | None = None, *, span_kind: str = "LLM") -> Callable:
 
     def decorator(fn: Callable) -> Callable:
         span_name = name or fn.__name__
+        docstring = (fn.__doc__ or "").strip() or None
 
         def _record(sdk: KateSDK, input_str: str, output: Any, error: str | None,
                      duration_ms: float, *, enhanced: bool = False,
@@ -58,6 +59,8 @@ def trace(name: str | None = None, *, span_kind: str = "LLM") -> Callable:
                     error=error,
                     enhanced=enhanced,
                     extension_id=extension_id,
+                    kind=kind,
+                    docstring=docstring,
                 )
             )
 

@@ -142,6 +142,8 @@ class RemoteEvalRunner:
                 "error": s.error,
                 "model": s.model,
                 "token_count": s.token_count,
+                "kind": s.kind,
+                "docstring": s.docstring,
             }
             for s in spans
         ]

@@ -18,6 +18,8 @@ class SpanRecord:
     token_count: int | None = None
     enhanced: bool = False
     extension_id: str | None = None
+    kind: str | None = None
+    docstring: str | None = None
 
 
 @dataclass

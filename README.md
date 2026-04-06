@@ -1,6 +1,6 @@
 ![PyPI](https://img.shields.io/pypi/v/projectkate)
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue)
-![Python](https://img.shields.io/badge/python-3.9+-blue)
+![Python](https://img.shields.io/badge/python-3.11+-blue)
 
 # KATE SDK
 
@@ -42,9 +42,9 @@ def summarize(text: str) -> str:
         messages=[{"role": "user", "content": f"Summarize: {text}"}],
     ).content[0].text
 
-async with projectkate.run() as ctx:
+async with projectkate.run():
     result = summarize("Today's top news stories...")
-    ctx.output(result)
+    print(result)
 ```
 
 ### Management client — programmatic platform access

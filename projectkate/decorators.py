@@ -88,19 +88,13 @@ def trace(name: str | None = None, *, span_kind: str = "LLM", kind: str | None =
                                     result = await _execute_extension(
                                         sdk, span_name,
                                         {"original_input": input_str,
-                                         "original_output": _serialize(output)},
+                                         "original_output": output},
                                     )
                                     if result and result.get("success"):
                                         enhanced = True
                                         raw_output = result.get("output", output)
                                         if isinstance(raw_output, dict) and "enhanced_output" in raw_output:
                                             output = raw_output["enhanced_output"]
-                                            # Undo the _serialize() JSON encoding applied before sending to extension
-                                            if isinstance(output, str):
-                                                try:
-                                                    output = json.loads(output)
-                                                except (json.JSONDecodeError, TypeError):
-                                                    pass
                                         else:
                                             output = raw_output
                                         await _report_ab(sdk, ext.id, enhanced_won=True)

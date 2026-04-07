@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from projectkate.discovery import DiscoveryClient
     from projectkate.evals import EvalsClient
     from projectkate.runs import RunsClient
+    from projectkate.tools import ToolsClient
     from projectkate.wallet import WalletClient
 
 
@@ -57,6 +58,7 @@ class KateClient:
         self._artifacts: ArtifactsClient | None = None
         self._wallet: WalletClient | None = None
         self._runs: RunsClient | None = None
+        self._tools: ToolsClient | None = None
 
     def __repr__(self) -> str:
         return f"KateClient(base_url={self._base_url!r})"
@@ -145,6 +147,13 @@ class KateClient:
             from projectkate.runs import RunsClient
             self._runs = RunsClient(self)
         return self._runs
+
+    @property
+    def tools(self) -> ToolsClient:
+        if self._tools is None:
+            from projectkate.tools import ToolsClient
+            self._tools = ToolsClient(self)
+        return self._tools
 
     async def close(self) -> None:
         """Close the underlying HTTP client."""

@@ -161,6 +161,24 @@ class KateSDK:
         )
         return await runner.run(ctx.spans)
 
+    async def get_tools(self, format: str = "openai") -> list[dict]:
+        """Discover available marketplace tools for the current agent."""
+        if not self._remote_runner:
+            raise RuntimeError(
+                "get_tools() requires remote mode. "
+                "Call projectkate.init(api_url=..., api_key=...) first."
+            )
+        return await self._remote_runner.get_tools(format=format)
+
+    async def call_tool(self, tool_name: str, input_data: dict | None = None) -> dict:
+        """Execute a marketplace tool. Returns raw response dict."""
+        if not self._remote_runner:
+            raise RuntimeError(
+                "call_tool() requires remote mode. "
+                "Call projectkate.init(api_url=..., api_key=...) first."
+            )
+        return await self._remote_runner.call_tool(tool_name, input_data)
+
     async def poll_run_status(
         self, run_id: str, *, interval_seconds: float = 2.0, timeout_seconds: float = 300.0,
     ) -> dict:

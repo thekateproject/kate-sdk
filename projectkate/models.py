@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Any
 
 
 @dataclass
@@ -128,3 +129,20 @@ class RunSummary:
     overall_score: float | None = None
     created_at: str | None = None
     completed_at: str | None = None
+
+
+@dataclass
+class ToolResult:
+    success: bool
+    output: Any = None
+    error: str | None = None
+    execution_time_ms: int = 0
+    tokens_charged: int = 0
+
+
+@dataclass
+class ToolCredentialStatus:
+    tool_name: str
+    artifact_id: str
+    status: str = "active"
+    missing_keys: list[str] = field(default_factory=list)

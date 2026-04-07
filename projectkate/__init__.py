@@ -6,6 +6,7 @@ import time
 from typing import Any, Callable
 
 from projectkate._state import KateSDK
+from projectkate._tool_loop import LocalTool, ToolLoopResult, tool_loop
 from projectkate.client import KateClient
 from projectkate.context import SpanRecord
 from projectkate.decorators import trace
@@ -102,6 +103,9 @@ __all__ = [
     "get_tools",
     "call_tool",
     "make_kate_tool_executor",
+    "tool_loop",
+    "ToolLoopResult",
+    "LocalTool",
     "KateRemoteError",
     "KateToolError",
     "KateCredentialError",

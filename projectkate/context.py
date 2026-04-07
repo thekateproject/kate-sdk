@@ -16,9 +16,6 @@ class SpanRecord:
     error: str | None = None
     model: str | None = None
     token_count: int | None = None
-    enhanced: bool = False
-    extension_id: str | None = None
-    kind: str | None = None
     docstring: str | None = None
 
 

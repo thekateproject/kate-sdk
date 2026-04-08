@@ -4,7 +4,7 @@
 
 # KATE SDK
 
-Auto-eval and observability for AI agents. Trace every LLM call, run evaluations, and catch regressions before they ship.
+Auto-eval, observability, and knowledge marketplace for AI agents. Trace every LLM call, run evaluations, discover and use marketplace tools, and catch regressions before they ship.
 
 ## Install
 

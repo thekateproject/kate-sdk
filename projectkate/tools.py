@@ -16,6 +16,8 @@ from projectkate.remote.runner import (
 if TYPE_CHECKING:
     from projectkate.client import KateClient
 
+__all__ = ["ToolsClient", "KateBalanceError", "KateCredentialError", "KateToolError"]
+
 
 class ToolsClient:
     def __init__(self, client: KateClient) -> None:

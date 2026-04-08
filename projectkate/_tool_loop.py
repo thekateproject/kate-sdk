@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import asyncio
+import inspect
 import json
 import logging
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
@@ -97,15 +98,22 @@ class _OpenAIAdapter(_ProviderAdapter):
         message = response.choices[0].message
         if not message.tool_calls:
             return []
-        return [
-            ToolCallInfo(
-                id=tc.id,
-                name=tc.function.name,
-                arguments=json.loads(tc.function.arguments),
-                is_local=False,  # set later
+        calls = []
+        for tc in message.tool_calls:
+            try:
+                args = json.loads(tc.function.arguments)
+            except (json.JSONDecodeError, TypeError):
+                logger.warning("Invalid JSON in tool call arguments for %s", tc.function.name)
+                args = {}
+            calls.append(
+                ToolCallInfo(
+                    id=tc.id,
+                    name=tc.function.name,
+                    arguments=args,
+                    is_local=False,  # set later
+                )
             )
-            for tc in message.tool_calls
-        ]
+        return calls
 
     def extract_text(self, response: Any) -> str:
         return response.choices[0].message.content or ""
@@ -257,10 +265,18 @@ def _to_openai_tool(local_tool: LocalTool) -> dict:
 
 
 async def _run_local_tool(fn: Callable, args: dict) -> str:
-    if asyncio.iscoroutinefunction(fn):
-        result = await fn(**args)
+    # Filter args to only keys the function actually accepts
+    sig = inspect.signature(fn)
+    if any(p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values()):
+        filtered = args  # function accepts **kwargs, pass everything
     else:
-        result = fn(**args)
+        valid_keys = set(sig.parameters.keys())
+        filtered = {k: v for k, v in args.items() if k in valid_keys}
+
+    if asyncio.iscoroutinefunction(fn):
+        result = await fn(**filtered)
+    else:
+        result = fn(**filtered)
     if isinstance(result, (dict, list)):
         return json.dumps(result, default=str)
     return str(result)
@@ -357,9 +373,20 @@ async def tool_loop(
 
     total_tool_calls = 0
     rounds = 0
+    response = None
+    max_messages = max_rounds * 10  # cap total message history
 
     for _ in range(max_rounds):
         rounds += 1
+
+        # Trim oldest non-system messages if history is getting too long
+        if len(history) > max_messages:
+            system_msgs = [m for m in history if m.get("role") == "system"]
+            other_msgs = [m for m in history if m.get("role") != "system"]
+            # Keep the most recent messages
+            trimmed = other_msgs[-(max_messages - len(system_msgs)):]
+            history = system_msgs + trimmed
+
         response = await adapter.chat(history, all_tools_formatted, model, **llm_kwargs)
         history.append(adapter.build_assistant_message(response))
 
@@ -377,14 +404,16 @@ async def tool_loop(
                 try:
                     result_str = await _run_local_tool(local_registry[tc.name], tc.arguments)
                 except Exception as exc:
-                    result_str = f"Error executing local tool '{tc.name}': {exc}"
+                    logger.error("Local tool '%s' failed", tc.name, exc_info=True)
+                    result_str = f"Error: tool '{tc.name}' failed with {type(exc).__name__}"
             else:
                 tc.is_local = False
                 try:
                     tool_result = await projectkate.call_tool(tc.name, tc.arguments)
                     result_str = _result_to_string(tool_result)
                 except Exception as exc:
-                    result_str = f"Error executing KATE tool '{tc.name}': {exc}"
+                    logger.error("KATE tool '%s' failed", tc.name, exc_info=True)
+                    result_str = f"Error: tool '{tc.name}' failed with {type(exc).__name__}"
 
             results.append((tc, result_str))
 
@@ -396,7 +425,7 @@ async def tool_loop(
 
         history.extend(adapter.build_tool_result_messages(results))
 
-    content = adapter.extract_text(response)
+    content = adapter.extract_text(response) if response is not None else ""
 
     return ToolLoopResult(
         content=content,

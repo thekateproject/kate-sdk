@@ -206,7 +206,8 @@ class RemoteEvalRunner:
             logger.warning("Tool discovery unavailable — returning empty list")
             return []
         self._handle_response(resp, "get tools")
-        tools = resp.json()
+        data = resp.json()
+        tools = data.get("tools", []) if isinstance(data, dict) else data
         if format == "openai":
             return [{k: v for k, v in t.items() if k != "metadata"} for t in tools]
         return tools

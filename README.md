@@ -66,6 +66,88 @@ async with KateClient(api_key="kate_...") as kate:
     balance = await kate.wallet.get_balance()
 ```
 
+## Tools — discover and use marketplace tools
+
+KATE agents can discover and execute tools from the marketplace. The SDK provides a tool loop that handles the LLM ↔ tool-call cycle automatically.
+
+### Agentic tool loop
+
+Wire up your LLM client and let the SDK handle tool discovery, execution, and chaining:
+
+```python
+import projectkate
+from openai import AsyncOpenAI
+
+projectkate.init()
+llm = AsyncOpenAI()
+
+messages = [
+    {"role": "system", "content": "You are a helpful assistant with access to tools."},
+    {"role": "user", "content": "Find SEO keywords for 'AI observability'"},
+]
+
+result = await projectkate.tool_loop(
+    llm,
+    model="gpt-4o",
+    messages=messages,
+    max_rounds=10,
+)
+
+print(result.content)          # Final LLM response
+print(result.tool_calls_made)  # Number of tool calls executed
+```
+
+Works with both OpenAI and Anthropic clients — the SDK detects the provider automatically.
+
+### Local tools
+
+You can register your own tools alongside marketplace tools. The SDK merges them and routes calls to the right handler:
+
+```python
+from projectkate import LocalTool
+
+def get_current_date() -> str:
+    from datetime import date
+    return date.today().isoformat()
+
+result = await projectkate.tool_loop(
+    llm,
+    model="gpt-4o",
+    messages=messages,
+    local_tools=[
+        LocalTool(
+            name="get_current_date",
+            description="Returns today's date in ISO format",
+            parameters={"type": "object", "properties": {}},
+            fn=get_current_date,
+        ),
+    ],
+)
+```
+
+Local tools run in-process. Async functions are supported.
+
+### Direct tool management
+
+Use the management client for lower-level control:
+
+```python
+async with KateClient(api_key="kate_...") as kate:
+    # List tools available to your agent
+    tools = await kate.tools.list(agent_id="...")
+
+    # Execute a specific tool
+    result = await kate.tools.execute(
+        agent_id="...",
+        tool_name="seo_keyword_research",
+        input_data={"query": "AI observability"},
+    )
+    print(result.output)
+
+    # Check credential status for subscribed tools
+    statuses = await kate.tools.status(agent_id="...")
+```
+
 ## Local Eval (no server needed)
 
 Run evaluations locally against your agent with zero infrastructure:

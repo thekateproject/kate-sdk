@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "projectkate"
-version = "0.3.1"
+version = "0.3.2"
 description = "KATE SDK — auto-eval, observability, and knowledge marketplace for AI agents"
 authors = [{ name = "Sagnik", email = "sagnik@projectkate.com" }]
 license = { text = "Apache-2.0" }

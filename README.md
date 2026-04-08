@@ -31,19 +31,27 @@ pip install projectkate[all]                   # All supported providers
 
 ```python
 import projectkate
+from openai import AsyncOpenAI
 
-# Initialize — reads KATE_API_URL, KATE_API_KEY, KATE_AGENT_ID from env
-projectkate.init()
+# Initialize — reads KATE_API_URL and KATE_API_KEY from env
+projectkate.init(
+    agent_name="News Summarizer",
+    agent_objective="Summarize news articles concisely",
+    agent_domain="content",
+)
+
+client = AsyncOpenAI()
 
 @projectkate.trace("summarize")
-def summarize(text: str) -> str:
-    return client.messages.create(
-        model="claude-sonnet-4-20250514",
+async def summarize(text: str) -> str:
+    response = await client.chat.completions.create(
+        model="gpt-4o",
         messages=[{"role": "user", "content": f"Summarize: {text}"}],
-    ).content[0].text
+    )
+    return response.choices[0].message.content
 
 async with projectkate.run():
-    result = summarize("Today's top news stories...")
+    result = await summarize("Today's top news stories...")
     print(result)
 ```
 
